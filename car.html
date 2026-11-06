@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل وموسوعة مواصفات السيارات | Car Specs Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- Navbar -->
+    <header class="bg-slate-800/90 backdrop-blur border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-lg shadow-blue-600/30">
+                    <i class="fa-solid font-bold fa-car-rear text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-wide text-white">دليل السيارات <span class="text-blue-500">الكامل</span></h1>
+                    <p class="text-xs text-slate-400">موسوعة مواصفات المحركات، الجير، والموديلات</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-6 text-sm bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-700">
+                <div class="text-center">
+                    <span class="block font-bold text-blue-400" id="totalCarsCount">0</span>
+                    <span class="text-xs text-slate-400">سيارة مسجلة</span>
+                </div>
+                <div class="h-6 w-px bg-slate-700"></div>
+                <div class="text-center">
+                    <span class="block font-bold text-emerald-400">100%</span>
+                    <span class="text-xs text-slate-400">مواصفات دقيقة</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+
+        <!-- Search & Filter Controls -->
+        <section class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl mb-8">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-blue-400">
+                <i class="fa-solid fa-sliders"></i> تصفية وبحث في السيارات
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Search Input -->
+                <div class="relative">
+                    <label class="block text-xs text-slate-400 mb-1">اسم السيارة أو الموديل</label>
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="ابحث مثلاً: جولف، مرسيدس..." 
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-blue-500 transition">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500"></i>
+                    </div>
+                </div>
+
+                <!-- Brand Filter -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">الشركة المصنعة</label>
+                    <select id="brandFilter" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        <option value="all">جميع الشركات</option>
+                        <option value="Volkswagen">فولكس فاجن (Volkswagen)</option>
+                        <option value="Hyundai">هيونداي (Hyundai)</option>
+                        <option value="Kia">كيا (Kia)</option>
+                        <option value="Mercedes-Benz">مرسيدس (Mercedes-Benz)</option>
+                    </select>
+                </div>
+
+                <!-- Transmission Filter -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">نوع ناقل الحركة (الجير)</label>
+                    <select id="gearFilter" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        <option value="all">جميع الأنواع</option>
+                        <option value="أوتوماتيك">أوتوماتيك (Automatic)</option>
+                        <option value="عادي (يدوي)">عادي / يدوي (Manual)</option>
+                    </select>
+                </div>
+
+                <!-- Year Filter -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">الموديل (سنة الصنع)</label>
+                    <select id="yearFilter" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        <option value="all">جميع السنين</option>
+                        <option value="2022">2022 فما فوق</option>
+                        <option value="2015-2021">2015 - 2021</option>
+                        <option value="2010-2014">2010 - 2014</option>
+                        <option value="under2010">أقل من 2010</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cars Display Grid -->
+        <section>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list text-blue-500"></i> قリスト السيارات المتاحة
+                </h3>
+                <span id="resultsCount" class="text-sm text-slate-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
+                    جاري التحميل...
+                </span>
+            </div>
+
+            <!-- Grid Container -->
+            <div id="carsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic Content Generated via JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-16 bg-slate-800/50 rounded-2xl border border-slate-700">
+                <i class="fa-solid fa-car-burst text-5xl text-slate-600 mb-4"></i>
+                <h4 class="text-lg font-bold text-slate-300">لم يتم العثور على نتائج</h4>
+                <p class="text-sm text-slate-500 mt-1">جرب تغيير خيارات البحث أو التصفية أعلاه.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-8 mt-12 text-center text-slate-500 text-sm">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>© 2026 دليل مواصفات السيارات الشامل. جميع الحقوق محفوظة.</p>
+            <div class="flex gap-4 text-xs text-slate-400">
+                <a href="#" class="hover:text-blue-400">سياسة الخصوصية</a>
+                <span>•</span>
+                <a href="#" class="hover:text-blue-400">شروط الاستخدام</a>
+                <span>•</span>
+                <a href="#" class="hover:text-blue-400">اتصل بنا</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Database & Logic -->
+    <script>
+        // Database of Cars Specification
+        const carsDatabase = [
+            {
+                id: 1,
+                name: "فولكس فاجن جولف 6",
+                brand: "Volkswagen",
+                modelYear: 2010,
+                gearType: "أوتوماتيك",
+                engineSize: "1.4 TSI / 1600 CC",
+                horsePower: "122 حصان",
+                fuelType: "بنزين",
+                fuelConsumption: "6.2 ليتر / 100 كم",
+                engineCondition: "ممتاز - تسارع قوي واقتصادي",
+                features: ["فرامل ABS", "وسائد هوائية 6", "تكييف خلفي", "ثبات إلكتروني ESP"],
+                pros: "ثبات عالي على الطرقات، خامات داخلية ممتازة.",
+                cons: "قطع غيار مرتفعة السعر نسبياً."
+            },
+            {
+                id: 2,
+                name: "هيونداي أفانتي / إيلانترا AD",
+                brand: "Hyundai",
+                modelYear: 2018,
+                gearType: "أوتوماتيك",
+                engineSize: "1600 CC GDI",
+                horsePower: "127 حصان",
+                fuelType: "بنزين",
+                fuelConsumption: "6.8 ليتر / 100 كم",
+                engineCondition: "اعتمادي وعالي الكفاءة",
+                features: ["شاشة لمس", "كاميرا خلفية", "حساسات ركن", "وضعيات قيادة متعددة"],
+                pros: "قطع غيار متوفرة ورخيصة، صيانة سهلة.",
+                cons: "عزل الصوت متوسط عند السرعات العالية."
+            },
+            {
+                id: 3,
+                name: "كيا سيراتو K3",
+                brand: "Kia",
+                modelYear: 2015,
+                gearType: "أوتوماتيك",
+                engineSize: "1600 CC MPI",
+                horsePower: "130 حصان",
+                fuelType: "بنزين",
+                fuelConsumption: "6.5 ليتر / 100 كم",
+                engineCondition: "سلس واعتمادي جداً",
+                features: ["فتحة سقف", "جنوط سبور", "تحكم طارة", "تحكم طارة شاشة"],
+                pros: "تصميم عصري ومساحة داخلية واسعة.",
+                cons: "نظام التعليق قاسي قليلاً."
+            },
+            {
+                id: 4,
+                name: "مرسيدس بنز E200",
+                brand: "Mercedes-Benz",
+                modelYear: 2021,
+                gearType: "أوتوماتيك",
+                engineSize: "2000 CC توربو",
+                horsePower: "197 حصان",
+                fuelType: "بنزين",
+                fuelConsumption: "7.1 ليتر / 100 كم",
+                engineCondition: "أداء رياضي قوي وفائق الهدوء",
+                features: ["قيادة شبه ذاتية", "شاشات رقمية مزدوجة", "جلد طبيعي", "نظام صوتي Burmester"],
+                pros: "قمة الفخامة، عزل صوت تام، أعلى درجات الأمان.",
+                cons: "تكاليف الصيانة والترخيص مرتفعة."
+            },
+            {
+                id: 5,
+                name: "فولكس فاجن بولو",
+                brand: "Volkswagen",
+                modelYear: 2008,
+                gearType: "عادي (يدوي)",
+                engineSize: "1400 CC",
+                horsePower: "85 حصان",
+                fuelType: "بنزين",
+                fuelConsumption: "5.8 ليتر / 100 كم",
+                engineCondition: "اقتصادي وقوي في الاستهلاك اليومي",
+                features: ["زجاج كهربائي", "تكييف هواء", "سنتر لوك"],
+                pros: "حجم مناسب للمدينة، استهلاك بنزين خيالي.",
+                cons: "المساحة الخلفية ضيقة نوعاً ما."
+            },
+            {
+                id: 6,
+                name: "كيا ريو",
+                brand: "Kia",
+                modelYear: 2013,
+                gearType: "عادي (يدوي)",
+                engineSize: "1400 CC",
+                horsePower: "107 حصان",
+                fuelType: "بنزين",
+                fuelConsumption: "5.9 ليتر / 100 كم",
+                engineCondition: "بسيط، سهل الصيانة وأعطال قليلة",
+                features: ["مرايات كهرباء", "مدخل AUX/USB", "وسائد أمامية"],
+                pros: "سيارة عملة واقتصادية جداً.",
+                cons: "الخامات الداخلية يغلب عليها البلاستيك."
+            }
+        ];
+
+        // DOM Elements
+        const carsGrid = document.getElementById('carsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const brandFilter = document.getElementById('brandFilter');
+        const gearFilter = document.getElementById('gearFilter');
+        const yearFilter = document.getElementById('yearFilter');
+        const emptyState = document.getElementById('emptyState');
+        const resultsCount = document.getElementById('resultsCount');
+        const totalCarsCount = document.getElementById('totalCarsCount');
+
+        totalCarsCount.textContent = carsDatabase.length;
+
+        // Render Cars Cards Function
+        function renderCars(data) {
+            carsGrid.innerHTML = '';
+            resultsCount.textContent = `عرض ${data.length} من إجمالي ${carsDatabase.length} سيارات`;
+
+            if (data.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            data.forEach(car => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-lg hover:border-blue-500/50 transition duration-300 flex flex-col justify-between";
+
+                card.innerHTML = `
+                    <div class="p-6">
+                        <!-- Card Header -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="text-xs font-bold px-2.5 py-1 rounded-md ${car.gearType.includes('أوتوماتيك') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'} mb-2 inline-block">
+                                    <i class="fa-solid fa-gear text-xs"></i> ${car.gearType}
+                                </span>
+                                <h4 class="text-xl font-black text-white">${car.name}</h4>
+                                <span class="text-xs text-slate-400">موديل السنة: <strong class="text-slate-200">${car.modelYear}</strong></span>
+                            </div>
+                            <span class="bg-slate-900 border border-slate-700 text-slate-300 font-bold text-xs px-3 py-1 rounded-full">
+                                ${car.brand}
+                            </span>
+                        </div>
+
+                        <!-- Technical Specs Matrix -->
+                        <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-700/60 mb-4 space-y-2 text-xs">
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                                <span class="text-slate-400"><i class="fa-solid fa-microchip text-blue-400 ml-1"></i> المحرك (سعة CC):</span>
+                                <span class="font-semibold text-slate-200">${car.engineSize}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                                <span class="text-slate-400"><i class="fa-solid fa-horse-head text-amber-400 ml-1"></i> القوة (الأحصنة):</span>
+                                <span class="font-semibold text-slate-200">${car.horsePower}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                                <span class="text-slate-400"><i class="fa-solid fa-gas-pump text-emerald-400 ml-1"></i> استهلاك الوقود:</span>
+                                <span class="font-semibold text-slate-200">${car.fuelConsumption}</span>
+                            </div>
+                            <div class="flex justify-between pt-0.5">
+                                <span class="text-slate-400"><i class="fa-solid fa-heart-pulse text-red-400 ml-1"></i> تقييم المحرك:</span>
+                                <span class="font-semibold text-emerald-400">${car.engineCondition}</span>
+                            </div>
+                        </div>
+
+                        <!-- Features Badges -->
+                        <div class="mb-4">
+                            <h5 class="text-xs text-slate-400 font-bold mb-2">التجهيزات والتكنولوجيا:</h5>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${car.features.map(f => `<span class="bg-slate-700/60 text-slate-300 text-[11px] px-2 py-0.5 rounded">${f}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Pros & Cons -->
+                        <div class="text-xs space-y-1.5 pt-3 border-t border-slate-700/80">
+                            <p class="text-emerald-400"><i class="fa-solid fa-circle-check ml-1"></i> <strong>الإيجابيات:</strong> <span class="text-slate-300">${car.pros}</span></p>
+                            <p class="text-rose-400"><i class="fa-solid fa-circle-xmark ml-1"></i> <strong>الملاحظات:</strong> <span class="text-slate-300">${car.cons}</span></p>
+                        </div>
+                    </div>
+                `;
+
+                carsGrid.appendChild(card);
+            });
+        }
+
+        // Filtering System
+        function filterCars() {
+            const query = searchInput.value.toLowerCase().trim();
+            const selectedBrand = brandFilter.value;
+            const selectedGear = gearFilter.value;
+            const selectedYear = yearFilter.value;
+
+            const filtered = carsDatabase.filter(car => {
+                // Text Search
+                const matchesSearch = car.name.toLowerCase().includes(query) || 
+                                      car.brand.toLowerCase().includes(query) ||
+                                      car.modelYear.toString().includes(query);
+
+                // Brand Filter
+                const matchesBrand = selectedBrand === 'all' || car.brand === selectedBrand;
+
+                // Gear Filter
+                const matchesGear = selectedGear === 'all' || car.gearType === selectedGear;
+
+                // Year Filter
+                let matchesYear = true;
+                if (selectedYear === '2022') matchesYear = car.modelYear >= 2022;
+                else if (selectedYear === '2015-2021') matchesYear = car.modelYear >= 2015 && car.modelYear <= 2021;
+                else if (selectedYear === '2010-2014') matchesYear = car.modelYear >= 2010 && car.modelYear <= 2014;
+                else if (selectedYear === 'under2010') matchesYear = car.modelYear < 2010;
+
+                return matchesSearch && matchesBrand && matchesGear && matchesYear;
+            });
+
+            renderCars(filtered);
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', filterCars);
+        brandFilter.addEventListener('change', filterCars);
+        gearFilter.addEventListener('change', filterCars);
+        yearFilter.addEventListener('change', filterCars);
+
+        // Initial Load
+        renderCars(carsDatabase);
+    </script>
+</body>
+</html>
